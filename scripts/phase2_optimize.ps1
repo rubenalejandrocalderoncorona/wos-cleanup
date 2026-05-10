@@ -3,6 +3,10 @@
 #  Disables Windows telemetry, kills unnecessary background
 #  services, and tunes visual/performance/network settings
 #  for a clean, fast baseline.
+#
+#  Safe to run on Windows 10/11 (Home, Pro, Enterprise).
+#  All changes are reversible via Services.msc and regedit.
+#  Run as Administrator. Reboot after completion.
 # ============================================================
 
 $ErrorActionPreference = 'Continue'
