@@ -1,0 +1,66 @@
+Current errors:
+[wos-cleanup] Phase 1 complete.
+[wos-cleanup] Recommendation: reboot now, then re-run "wos-cleanup.bat phase 2" manually.
+[wos-cleanup] OR press any key to continue directly to Phase 2 (skip reboot) ...
+
+[wos-cleanup] === Phase 2 ÔÇö Optimize ===
+En C:\Users\isaia\OneDrive\Documentos\wos-cleanup-main\scripts\phase2_optimize.ps1: 142 Carácter: 55
++     if ($diskType -eq 'SSD' -or $diskType -eq 'NVMe') {
++                                                       ~
+Falta la llave de cierre "}" en el bloque de instrucciones o la definición de tipo.
+En C:\Users\isaia\OneDrive\Documentos\wos-cleanup-main\scripts\phase2_optimize.ps1: 138 Carácter: 5
++ try {
++     ~
+Falta la llave de cierre "}" en el bloque de instrucciones o la definición de tipo.
+En C:\Users\isaia\OneDrive\Documentos\wos-cleanup-main\scripts\phase2_optimize.ps1: 143 Carácter: 98
++ ... Search" "Windows Search indexing (SSD confirmed â€” safe to disable)"
++                                                                        ~
+Falta un bloque Catch o Finally en la instrucción Try.
+En C:\Users\isaia\OneDrive\Documentos\wos-cleanup-main\scripts\phase2_optimize.ps1: 143 Carácter: 98
++ ... Search" "Windows Search indexing (SSD confirmed â€” safe to disable)"
++                                                                        ~
+Token ')' inesperado en la expresión o la instrucción.
+En C:\Users\isaia\OneDrive\Documentos\wos-cleanup-main\scripts\phase2_optimize.ps1: 145 Carácter: 26
++         Write-Host "     [SKIP] WSearch kept â€” storage type '$diskT ...
++                          ~~~~~~
+Token '[SKIP]' inesperado en la expresión o la instrucción.
+En C:\Users\isaia\OneDrive\Documentos\wos-cleanup-main\scripts\phase2_optimize.ps1: 145 Carácter: 33
++         Write-Host "     [SKIP] WSearch kept â€” storage type '$diskT ...
++                                 ~~~~~~~
+Token 'WSearch' inesperado en la expresión o la instrucción.
+En C:\Users\isaia\OneDrive\Documentos\wos-cleanup-main\scripts\phase2_optimize.ps1: 146 Carácter: 5
++     }
++     ~
+Token '}' inesperado en la expresión o la instrucción.
+En C:\Users\isaia\OneDrive\Documentos\wos-cleanup-main\scripts\phase2_optimize.ps1: 147 Carácter: 1
++ }
++ ~
+Token '}' inesperado en la expresión o la instrucción.
+En C:\Users\isaia\OneDrive\Documentos\wos-cleanup-main\scripts\phase2_optimize.ps1: 158 Carácter: 55
++     if ($diskType -eq 'SSD' -or $diskType -eq 'NVMe') {
++                                                       ~
+Falta la llave de cierre "}" en el bloque de instrucciones o la definición de tipo.
+En C:\Users\isaia\OneDrive\Documentos\wos-cleanup-main\scripts\phase2_optimize.ps1: 154 Carácter: 5
++ try {
++     ~
+Falta la llave de cierre "}" en el bloque de instrucciones o la definición de tipo.
+No se notificaron todos los errores de análisis. Corrija los errores notificados e inténtelo de nuevo.
+    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : MissingEndCurlyBrace
+
+
+[wos-cleanup] Phase 2 complete.
+[wos-cleanup] Recommendation: reboot now, then re-run "wos-cleanup.bat phase 3" manually.
+[wos-cleanup] OR press any key to continue directly to Phase 3 (skip reboot) ...
+
+[wos-cleanup] === Phase 3 ÔÇö Deep Cleanup ===
+En C:\Users\isaia\OneDrive\Documentos\wos-cleanup-main\scripts\phase3_cleanup.ps1: 232 Carácter: 33
++ if (Test-Path "C:\Windows.old") {
++                                 ~
+Falta la llave de cierre "}" en el bloque de instrucciones o la definición de tipo.
+    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : MissingEndCurlyBrace
+
+
+[wos-cleanup] All phases complete.
+[wos-cleanup] Reboot your system now to apply all changes.
