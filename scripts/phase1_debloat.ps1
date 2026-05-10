@@ -5,7 +5,8 @@
 #  and the system provisioned image.
 #
 #  Goal: clean baseline — only fundamental Windows components
-#  remain. User installs what they actually need afterwards.
+#  remain. User installs only what they actually need afterwards.
+#  Safe to run on any Windows 10/11 machine (standalone or domain-joined).
 # ============================================================
 
 $ErrorActionPreference = 'Continue'
