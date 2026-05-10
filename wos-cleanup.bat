@@ -2,12 +2,12 @@
 setlocal EnableDelayedExpansion
 
 :: ============================================================
-::  wos-cleanup.bat  —  single-file launcher
+::  wos-cleanup.bat   -   single-file launcher
 ::  Double-click to run.  No extraction needed.
 ::  Downloads phase scripts from GitHub and runs all phases.
 :: ============================================================
 
-:: ── Auto-elevation ───────────────────────────────────────────
+:: -- Auto-elevation -------------------------------------------
 net session >nul 2>&1
 if %errorlevel% neq 0 (
     echo [*] Not running as Administrator. Re-launching elevated ...
@@ -15,13 +15,13 @@ if %errorlevel% neq 0 (
     exit /b
 )
 
-:: ── Config ───────────────────────────────────────────────────
+:: -- Config ---------------------------------------------------
 set "REPO=rubenalejandrocalderoncorona/wos-cleanup"
 set "BRANCH=main"
 set "BASE_URL=https://raw.githubusercontent.com/%REPO%/%BRANCH%/scripts"
 set "TMP=%TEMP%\wos-cleanup"
 
-:: ── Banner ───────────────────────────────────────────────────
+:: -- Banner ---------------------------------------------------
 echo.
 echo  ==========================================
 echo   WOS-Cleanup -- Windows Optimization Tool
@@ -37,10 +37,10 @@ echo.
 echo  Press any key to begin, or close this window to cancel.
 pause >nul
 
-:: ── Create temp dir ──────────────────────────────────────────
+:: -- Create temp dir ------------------------------------------
 if not exist "%TMP%" mkdir "%TMP%"
 
-:: ── Download scripts ─────────────────────────────────────────
+:: -- Download scripts -----------------------------------------
 echo.
 echo [*] Downloading phase scripts from GitHub ...
 
@@ -61,7 +61,7 @@ if %errorlevel% neq 0 (
 
 echo [*] Download complete.
 
-:: ── Phase 1 ──────────────────────────────────────────────────
+:: -- Phase 1 --------------------------------------------------
 echo.
 echo  ==========================================
 echo   Phase 1 of 3 -- Debloat
@@ -71,7 +71,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%TMP%\phase1_debloat.ps
 echo.
 echo [*] Phase 1 complete.
 
-:: ── Phase 2 ──────────────────────────────────────────────────
+:: -- Phase 2 --------------------------------------------------
 echo.
 echo  ==========================================
 echo   Phase 2 of 3 -- Optimize
@@ -81,7 +81,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%TMP%\phase2_optimize.p
 echo.
 echo [*] Phase 2 complete.
 
-:: ── Phase 3 ──────────────────────────────────────────────────
+:: -- Phase 3 --------------------------------------------------
 echo.
 echo  ==========================================
 echo   Phase 3 of 3 -- Cleanup
@@ -91,7 +91,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%TMP%\phase3_cleanup.ps
 echo.
 echo [*] Phase 3 complete.
 
-:: ── Done ─────────────────────────────────────────────────────
+:: -- Done -----------------------------------------------------
 echo.
 echo  ==========================================
 echo   All phases complete!

@@ -4,7 +4,7 @@
 #  unnecessary UWP (AppX) packages for the current user
 #  and the system provisioned image.
 #
-#  Goal: clean baseline — only fundamental Windows components
+#  Goal: clean baseline  -  only fundamental Windows components
 #  remain. User installs only what they actually need afterwards.
 #  Safe to run on any Windows 10/11 machine (standalone or domain-joined).
 # ============================================================
@@ -35,13 +35,13 @@ function Remove-AppxSafe {
     }
 }
 
-# ────────────────────────────────────────────────────────────
+# ------------------------------------------------------------
 Write-Host ""
 Write-Host "============================================================" -ForegroundColor Magenta
-Write-Host "  WOS-Cleanup  |  Phase 1 — Debloat                        " -ForegroundColor Magenta
+Write-Host "  WOS-Cleanup  |  Phase 1  -  Debloat                        " -ForegroundColor Magenta
 Write-Host "============================================================" -ForegroundColor Magenta
 
-# ── Gaming & Entertainment ───────────────────────────────────
+# -- Gaming & Entertainment -----------------------------------
 Write-Step "Removing gaming and entertainment bloatware ..."
 
 Remove-AppxSafe "Microsoft.XboxApp"                    "Xbox App"
@@ -64,7 +64,7 @@ Remove-AppxSafe "Disney.37853D22215B2"                 "Disney+"
 Remove-AppxSafe "AmazonVideo.PrimeVideo"               "Amazon Prime Video"
 Remove-AppxSafe "TikTok.TikTok"                        "TikTok"
 
-# ── 3D & Mixed Reality ───────────────────────────────────────
+# -- 3D & Mixed Reality ---------------------------------------
 Write-Step "Removing 3D and Mixed Reality components ..."
 
 Remove-AppxSafe "Microsoft.Microsoft3DViewer"          "3D Viewer"
@@ -72,7 +72,7 @@ Remove-AppxSafe "Microsoft.3DBuilder"                  "3D Builder"
 Remove-AppxSafe "Microsoft.Print3D"                    "Print 3D"
 Remove-AppxSafe "Microsoft.MixedReality.Portal"        "Mixed Reality Portal"
 
-# ── Cortana & Copilot ────────────────────────────────────────
+# -- Cortana & Copilot ----------------------------------------
 Write-Step "Removing Cortana and Copilot ..."
 
 Remove-AppxSafe "Microsoft.549981C3F5F10"              "Cortana (Win10/11 UWP)"
@@ -80,7 +80,7 @@ Remove-AppxSafe "Microsoft.Windows.Ai.Copilot.Provider" "Copilot Provider"
 Remove-AppxSafe "MicrosoftWindows.Client.Copilot"      "Windows Copilot"
 Remove-AppxSafe "Microsoft.Copilot"                    "Microsoft Copilot"
 
-# ── Communication & Social ───────────────────────────────────
+# -- Communication & Social -----------------------------------
 Write-Step "Removing bundled communication apps ..."
 
 Remove-AppxSafe "microsoft.windowscommunicationsapps"  "Mail and Calendar"
@@ -92,7 +92,7 @@ Remove-AppxSafe "MSTeams"                              "Microsoft Teams 2.0 (Win
 Remove-AppxSafe "Microsoft.Getskype"                   "Get Skype"
 Remove-AppxSafe "Microsoft.SkypeApp"                   "Skype"
 
-# ── News, Weather & Finance ──────────────────────────────────
+# -- News, Weather & Finance ----------------------------------
 Write-Step "Removing news, weather, and finance apps ..."
 
 Remove-AppxSafe "Microsoft.BingNews"                   "Microsoft News"
@@ -106,7 +106,7 @@ Remove-AppxSafe "Microsoft.MSN.News"                   "MSN News"
 Remove-AppxSafe "Microsoft.MSN.Sports"                 "MSN Sports"
 Remove-AppxSafe "Microsoft.MSN.Weather"                "MSN Weather"
 
-# ── Maps & Travel ────────────────────────────────────────────
+# -- Maps & Travel --------------------------------------------
 Write-Step "Removing Maps and travel apps ..."
 
 Remove-AppxSafe "Microsoft.WindowsMaps"                "Windows Maps"
@@ -114,7 +114,7 @@ Remove-AppxSafe "Microsoft.GetHelp"                    "Get Help"
 Remove-AppxSafe "Microsoft.Getstarted"                 "Tips / Get Started"
 Remove-AppxSafe "Microsoft.Todos"                      "Microsoft To Do"
 
-# ── Productivity & Office Ads ────────────────────────────────
+# -- Productivity & Office Ads --------------------------------
 Write-Step "Removing pre-installed productivity junk ..."
 
 Remove-AppxSafe "Microsoft.MicrosoftOfficeHub"         "Office Hub (ads)"
@@ -126,7 +126,7 @@ Remove-AppxSafe "MicrosoftCorporationII.MicrosoftFamily" "Microsoft Family Safet
 Remove-AppxSafe "Microsoft.MicrosoftJournal"           "Microsoft Journal"
 Remove-AppxSafe "Microsoft.WindowsNotepad"             "Notepad (Store version)"
 
-# ── Media & Camera ───────────────────────────────────────────
+# -- Media & Camera -------------------------------------------
 Write-Step "Removing camera and media extras ..."
 
 # WindowsCamera kept: only built-in webcam app; removing leaves no default.
@@ -138,7 +138,7 @@ Remove-AppxSafe "Microsoft.Clipchamp"                  "Clipchamp Video Editor"
 Remove-AppxSafe "Clipchamp.Clipchamp"                  "Clipchamp (alternate package name)"
 Remove-AppxSafe "Microsoft.MSPaint"                    "Paint 3D (legacy)"
 
-# ── Feedback & Dev ───────────────────────────────────────────
+# -- Feedback & Dev -------------------------------------------
 Write-Step "Removing feedback and developer preview apps ..."
 
 Remove-AppxSafe "Microsoft.WindowsFeedbackHub"         "Feedback Hub"
@@ -146,7 +146,7 @@ Remove-AppxSafe "Microsoft.WindowsFeedbackHub"         "Feedback Hub"
 Remove-AppxSafe "Microsoft.DevHome"                    "Dev Home (Win11)"
 Remove-AppxSafe "Microsoft.DevHomeGitHubExtension"    "Dev Home GitHub Extension"
 
-# ── OEM Bloatware — Common Brands ────────────────────────────
+# -- OEM Bloatware  -  Common Brands ----------------------------
 Write-Step "Removing common OEM bloatware ..."
 
 # HP
@@ -184,7 +184,7 @@ Remove-AppxSafe "SAMSUNGELECTRONICSCO.LTD.SamsungUpdate"   "Samsung Update"
 # MSI
 Remove-AppxSafe "MSIGroup.MsiCenter"                    "MSI Center"
 
-# ────────────────────────────────────────────────────────────
+# ------------------------------------------------------------
 Write-Host ""
 Write-Host "============================================================" -ForegroundColor Magenta
 Write-Host "  Phase 1 Complete. Bloatware removal finished.            " -ForegroundColor Magenta

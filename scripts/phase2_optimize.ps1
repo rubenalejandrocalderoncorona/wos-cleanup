@@ -51,13 +51,13 @@ function Disable-ServiceSafe {
     }
 }
 
-# ────────────────────────────────────────────────────────────
+# ------------------------------------------------------------
 Write-Host ""
 Write-Host "============================================================" -ForegroundColor Magenta
-Write-Host "  WOS-Cleanup  |  Phase 2 — Optimize                       " -ForegroundColor Magenta
+Write-Host "  WOS-Cleanup  |  Phase 2  -  Optimize                       " -ForegroundColor Magenta
 Write-Host "============================================================" -ForegroundColor Magenta
 
-# ── Telemetry & Data Collection ──────────────────────────────
+# -- Telemetry & Data Collection ------------------------------
 Write-Step "Disabling Windows telemetry and data collection ..."
 
 Set-RegistryValue "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" "AllowTelemetry" 0
@@ -77,7 +77,7 @@ Set-RegistryValue "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" "PublishUse
 Set-RegistryValue "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" "UploadUserActivities" 0
 
 Set-RegistryValue "HKCU:\SOFTWARE\Microsoft\Siuf\Rules" "NumberOfSIUFInPeriod" 0
-# PeriodInNanoSeconds must be deleted (not zeroed) — a value of 0 means "evaluate constantly"
+# PeriodInNanoSeconds must be deleted (not zeroed)  -  a value of 0 means "evaluate constantly"
 try {
     Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Siuf\Rules" -Name "PeriodInNanoSeconds" -Force -ErrorAction SilentlyContinue
     Write-Host "     [OK] PeriodInNanoSeconds deleted." -ForegroundColor Green
@@ -99,7 +99,7 @@ Set-RegistryValue "HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting" "Di
 Set-RegistryValue "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsAI" "DisableAIDataAnalysis" 1
 Set-RegistryValue "HKCU:\SOFTWARE\Policies\Microsoft\Windows\WindowsAI" "DisableAIDataAnalysis" 1
 
-# ── Telemetry Services ───────────────────────────────────────
+# -- Telemetry Services ---------------------------------------
 Write-Step "Disabling telemetry and tracking services ..."
 
 Disable-ServiceSafe "DiagTrack"               "Connected User Experiences and Telemetry"
@@ -113,7 +113,7 @@ Disable-ServiceSafe "diagsvc"                 "Diagnostic Execution Service"
 # WdiServiceHost and WdiSystemHost NOT disabled: they power the network troubleshooter wizard
 # which is a visible OS repair tool users rely on.
 
-# ── Unnecessary Background Services ─────────────────────────
+# -- Unnecessary Background Services -------------------------
 Write-Step "Disabling unnecessary background services ..."
 
 Disable-ServiceSafe "Fax"                     "Fax Service"
@@ -129,7 +129,7 @@ Disable-ServiceSafe "UmRdpService"            "Remote Desktop Services UserMode 
 # SessionEnv NOT disabled: dependency of Group Policy client on domain machines; breaks logins.
 # TrkWks NOT disabled: its absence causes shell shortcuts to broken files to stop auto-resolving.
 # stisvc NOT disabled: required by all TWAIN scanners (HP/Epson/Canon/Brother).
-# icssvc NOT disabled: Mobile Hotspot — useful feature, no perf impact when idle.
+# icssvc NOT disabled: Mobile Hotspot  -  useful feature, no perf impact when idle.
 # PhoneSvc NOT disabled: drives Bluetooth HFP call audio on headsets.
 # tabletinputservice NOT disabled: breaks touch/pen input on all touchscreen hardware.
 
@@ -140,32 +140,32 @@ try {
                     Where-Object { $_.DeviceId -eq 0 } |
                     Select-Object -ExpandProperty MediaType
     if ($diskType -eq 'SSD' -or $diskType -eq 'NVMe') {
-        Disable-ServiceSafe "WSearch" "Windows Search indexing (SSD confirmed — safe to disable)"
+        Disable-ServiceSafe "WSearch" "Windows Search indexing (SSD confirmed  -  safe to disable)"
     } else {
-        Write-Host "     [SKIP] WSearch kept — storage type '$diskType' is not SSD (disabling on HDD degrades performance)." -ForegroundColor DarkGray
+        Write-Host "     [SKIP] WSearch kept  -  storage type '$diskType' is not SSD (disabling on HDD degrades performance)." -ForegroundColor DarkGray
     }
 }
 catch {
-    Write-Host "     [SKIP] WSearch storage check failed: $($_.Exception.Message) — leaving enabled." -ForegroundColor DarkGray
+    Write-Host "     [SKIP] WSearch storage check failed: $($_.Exception.Message)  -  leaving enabled." -ForegroundColor DarkGray
 }
 
-# SysMain (Superfetch): disable only on SSD — critical for HDD boot/launch performance
+# SysMain (Superfetch): disable only on SSD  -  critical for HDD boot/launch performance
 Write-Host "`n[PHASE 2] Checking storage type before disabling SysMain ..." -ForegroundColor Cyan
 try {
     $diskType = Get-PhysicalDisk -ErrorAction SilentlyContinue |
                     Where-Object { $_.DeviceId -eq 0 } |
                     Select-Object -ExpandProperty MediaType
     if ($diskType -eq 'SSD' -or $diskType -eq 'NVMe') {
-        Disable-ServiceSafe "SysMain" "SysMain / Superfetch (SSD confirmed — safe to disable)"
+        Disable-ServiceSafe "SysMain" "SysMain / Superfetch (SSD confirmed  -  safe to disable)"
     } else {
-        Write-Host "     [SKIP] SysMain kept — storage type '$diskType' is not SSD (disabling on HDD causes slow boots)." -ForegroundColor DarkGray
+        Write-Host "     [SKIP] SysMain kept  -  storage type '$diskType' is not SSD (disabling on HDD causes slow boots)." -ForegroundColor DarkGray
     }
 }
 catch {
-    Write-Host "     [SKIP] SysMain storage check failed: $($_.Exception.Message) — leaving enabled." -ForegroundColor DarkGray
+    Write-Host "     [SKIP] SysMain storage check failed: $($_.Exception.Message)  -  leaving enabled." -ForegroundColor DarkGray
 }
 
-# ── Game DVR / Game Bar ──────────────────────────────────────
+# -- Game DVR / Game Bar --------------------------------------
 Write-Step "Disabling Game DVR and Game Bar overlays ..."
 
 Set-RegistryValue "HKCU:\System\GameConfigStore" "GameDVR_Enabled" 0
@@ -175,7 +175,7 @@ Set-RegistryValue "HKCU:\SOFTWARE\Microsoft\GameBar" "UseNexusForGameBarEnabled"
 Set-RegistryValue "HKCU:\SOFTWARE\Microsoft\GameBar" "AutoGameModeEnabled" 0
 Set-RegistryValue "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\ApplicationManagement\AllowGameDVR" "value" 0
 
-# ── Explorer & Shell Usability Tweaks ───────────────────────
+# -- Explorer & Shell Usability Tweaks -----------------------
 Write-Step "Applying Explorer usability improvements ..."
 
 # Show file extensions
@@ -184,8 +184,8 @@ Set-RegistryValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Adva
 # Show hidden files and folders
 Set-RegistryValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" "Hidden" 1
 
-# Show protected OS files (set to 1 to hide — keep default, just ensure extensions visible)
-# Do NOT set ShowSuperHidden to 1 (shows Windows system files — risky for casual use)
+# Show protected OS files (set to 1 to hide  -  keep default, just ensure extensions visible)
+# Do NOT set ShowSuperHidden to 1 (shows Windows system files  -  risky for casual use)
 
 # Open File Explorer to This PC instead of Quick Access
 Set-RegistryValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" "LaunchTo" 1
@@ -198,7 +198,7 @@ Set-RegistryValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\Feeds" "Shell
 Set-RegistryValue "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" "BingSearchEnabled" 0
 Set-RegistryValue "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer" "DisableSearchBoxSuggestions" 1
 
-# Restore full right-click context menu (Windows 11 — removes the simplified menu)
+# Restore full right-click context menu (Windows 11  -  removes the simplified menu)
 # Must use New-Item + Set-Item to correctly set the (default) value; Set-ItemProperty is unreliable for this.
 try {
     $clsidPath = "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32"
@@ -215,13 +215,13 @@ catch {
 # Disable Lock Screen (skip to login)
 Set-RegistryValue "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" "NoLockScreen" 1
 
-# Disable Taskbar Chat (Teams icon on taskbar — Win11)
+# Disable Taskbar Chat (Teams icon on taskbar  -  Win11)
 Set-RegistryValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" "TaskbarMn" 0
 
 # Disable Taskbar Widgets button (Win11)
 Set-RegistryValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" "TaskbarDa" 0
 
-# ── Visual Performance Tweaks ────────────────────────────────
+# -- Visual Performance Tweaks --------------------------------
 Write-Step "Optimizing visual settings for performance ..."
 
 Set-RegistryValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" "VisualFXSetting" 3
@@ -236,7 +236,7 @@ Set-RegistryValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Adva
 # Reduce mouse hover time
 Set-RegistryValue "HKCU:\Control Panel\Mouse" "MouseHoverTime" "100" "String"
 
-# ── Network / TCP-IP Tweaks ──────────────────────────────────
+# -- Network / TCP-IP Tweaks ----------------------------------
 Write-Step "Applying network and TCP/IP performance tweaks ..."
 
 # Nagle's algorithm must be disabled per-adapter (global Parameters path is ignored on Vista+).
@@ -272,13 +272,13 @@ catch {
 }
 
 # DNS negative cache: keep at default (a few seconds) to avoid hammering failed lookups.
-# MaxCacheTtl left at Windows default (86400) — no registry override needed.
+# MaxCacheTtl left at Windows default (86400)  -  no registry override needed.
 
-# ── Power Plan — Ultimate Performance ───────────────────────
+# -- Power Plan  -  Ultimate Performance -----------------------
 Write-Step "Activating Ultimate Performance power plan ..."
 
 try {
-    # Ultimate Performance is available on Pro/Enterprise/Education/Workstation — not on Home.
+    # Ultimate Performance is available on Pro/Enterprise/Education/Workstation  -  not on Home.
     # duplicatescheme may silently return nothing on Home SKUs, so we verify after the call.
     $existingGuid = (powercfg /list | Select-String "Ultimate Performance") -replace ".*GUID: ([a-f0-9-]+).*", '$1'
     if (-not $existingGuid) {
@@ -317,7 +317,7 @@ catch {
 # Disable Fast Startup (can cause update/dual-boot issues; true shutdown is cleaner)
 Set-RegistryValue "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Power" "HiberbootEnabled" 0
 
-# ── Startup Programs (common nuisances via registry) ────────
+# -- Startup Programs (common nuisances via registry) --------
 Write-Step "Removing common startup nuisances from registry ..."
 
 $startupKeys = @(
@@ -353,16 +353,16 @@ foreach ($key in $startupKeys) {
     }
 }
 
-# ── Disable Auto-Restart After Updates ──────────────────────
+# -- Disable Auto-Restart After Updates ----------------------
 Write-Step "Preventing Windows Update forced auto-restarts ..."
 
 Set-RegistryValue "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" "NoAutoRebootWithLoggedOnUsers" 1
 Set-RegistryValue "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" "AUPowerManagement" 0
 
-# Disable Windows Update P2P delivery — value 0 = HTTP only (Microsoft servers only, no peer sharing)
+# Disable Windows Update P2P delivery  -  value 0 = HTTP only (Microsoft servers only, no peer sharing)
 Set-RegistryValue "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DeliveryOptimization" "DODownloadMode" 0
 
-# ────────────────────────────────────────────────────────────
+# ------------------------------------------------------------
 Write-Host ""
 Write-Host "============================================================" -ForegroundColor Magenta
 Write-Host "  Phase 2 Complete. Optimization settings applied.         " -ForegroundColor Magenta

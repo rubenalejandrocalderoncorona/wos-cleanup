@@ -34,13 +34,13 @@ function Remove-FolderContents {
     }
 }
 
-# ────────────────────────────────────────────────────────────
+# ------------------------------------------------------------
 Write-Host ""
 Write-Host "============================================================" -ForegroundColor Magenta
-Write-Host "  WOS-Cleanup  |  Phase 3 — Deep System Cleanup            " -ForegroundColor Magenta
+Write-Host "  WOS-Cleanup  |  Phase 3  -  Deep System Cleanup            " -ForegroundColor Magenta
 Write-Host "============================================================" -ForegroundColor Magenta
 
-# ── 1. Configure and run Windows Disk Cleanup (cleanmgr) ────
+# -- 1. Configure and run Windows Disk Cleanup (cleanmgr) ----
 Write-Step "Configuring Windows Disk Cleanup (cleanmgr sageset) ..."
 
 $cleanmgrCategories = @(
@@ -105,7 +105,7 @@ catch {
     Write-Host "     [SKIP] cleanmgr: $($_.Exception.Message)" -ForegroundColor DarkGray
 }
 
-# ── 2. Manual temp/junk folder wipe ─────────────────────────
+# -- 2. Manual temp/junk folder wipe -------------------------
 Write-Step "Wiping temporary and junk folders ..."
 
 Remove-FolderContents "$env:TEMP"                                         "Current User Temp"
@@ -122,7 +122,7 @@ Remove-FolderContents "$env:LOCALAPPDATA\Microsoft\Windows\Explorer"      "Explo
 Remove-FolderContents "$env:APPDATA\Microsoft\Windows\Recent\AutomaticDestinations" "Recent Files Jump Lists"
 Remove-FolderContents "$env:APPDATA\Microsoft\Windows\Recent\CustomDestinations"    "Recent Files Custom Jump Lists"
 
-# Event logs — skip Security and System logs (compliance + OS stability)
+# Event logs  -  skip Security and System logs (compliance + OS stability)
 Write-Host "  -> Clearing Windows Event Logs (excluding Security and System) ..." -ForegroundColor Yellow
 try {
     $logs = & wevtutil el 2>$null
@@ -151,7 +151,7 @@ catch {
     Write-Host "     [SKIP] Recycle Bin: $($_.Exception.Message)" -ForegroundColor DarkGray
 }
 
-# ── 3. Windows Update cache (SoftwareDistribution) ──────────
+# -- 3. Windows Update cache (SoftwareDistribution) ----------
 Write-Step "Clearing Windows Update cache ..."
 
 $wuServices = @("wuauserv", "bits", "cryptsvc", "msiserver")
@@ -170,7 +170,7 @@ foreach ($svc in $wuServices) {
 Remove-FolderContents "C:\Windows\SoftwareDistribution\Download"     "Windows Update Download Cache"
 Remove-FolderContents "C:\Windows\SoftwareDistribution\DataStore"    "Windows Update DataStore"
 
-# catroot2: NEVER wipe all contents — it holds code-signing catalog DBs and full deletion
+# catroot2: NEVER wipe all contents  -  it holds code-signing catalog DBs and full deletion
 # can cause 0x80080005 update failures requiring manual DLL re-registration to recover.
 # Safe approach: only remove the lock/temp files that accumulate and block updates.
 Write-Host "  -> Clearing catroot2 lock/temp files only ..." -ForegroundColor Yellow
@@ -198,7 +198,7 @@ foreach ($svc in $wuServices) {
     }
 }
 
-# ── 4. Browser cache cleanup ─────────────────────────────────
+# -- 4. Browser cache cleanup ---------------------------------
 Write-Step "Clearing browser caches ..."
 
 # Microsoft Edge
@@ -226,11 +226,11 @@ if (Test-Path $firefoxProfiles) {
 Remove-FolderContents "$env:LOCALAPPDATA\BraveSoftware\Brave-Browser\User Data\Default\Cache" "Brave Cache"
 Remove-FolderContents "$env:LOCALAPPDATA\BraveSoftware\Brave-Browser\User Data\Default\Code Cache" "Brave Code Cache"
 
-# ── 5. Remove Windows.old ────────────────────────────────────
+# -- 5. Remove Windows.old ------------------------------------
 Write-Step "Removing Windows.old (previous Windows installation) ..."
 
 if (Test-Path "C:\Windows.old") {
-    Write-Host "  -> Found C:\Windows.old — removing via DISM /startcomponentcleanup /resetbase ..." -ForegroundColor Yellow
+    Write-Host "  -> Found C:\Windows.old  -  removing via DISM /startcomponentcleanup /resetbase ..." -ForegroundColor Yellow
     try {
         # /resetbase removes Windows.old and resets the component store baseline on Win10/11.
         # /spsuperseded is the old Win7/Server 2008 flag and has no effect here.
@@ -254,7 +254,7 @@ if (Test-Path "C:\Windows.old") {
     Write-Host "     [SKIP] C:\Windows.old not found." -ForegroundColor DarkGray
 }
 
-# ── 6. DISM Component Store Cleanup ─────────────────────────
+# -- 6. DISM Component Store Cleanup -------------------------
 Write-Step "Running DISM component store cleanup (5-15 minutes) ..."
 
 Write-Host "  -> dism /online /cleanup-image /startcomponentcleanup ..." -ForegroundColor Yellow
@@ -283,7 +283,7 @@ catch {
     Write-Host "     [SKIP] DISM analyze: $($_.Exception.Message)" -ForegroundColor DarkGray
 }
 
-# ── 7. DNS Cache flush ───────────────────────────────────────
+# -- 7. DNS Cache flush ---------------------------------------
 Write-Step "Flushing DNS cache ..."
 
 try {
@@ -298,7 +298,7 @@ catch {
     Write-Host "     [SKIP] DNS flush: $($_.Exception.Message)" -ForegroundColor DarkGray
 }
 
-# ────────────────────────────────────────────────────────────
+# ------------------------------------------------------------
 Write-Host ""
 Write-Host "============================================================" -ForegroundColor Magenta
 Write-Host "  Phase 3 Complete. System cleanup finished.               " -ForegroundColor Magenta
