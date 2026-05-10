@@ -2,127 +2,108 @@
 setlocal EnableDelayedExpansion
 
 :: ============================================================
-::  wos-cleanup.bat
-::  Usage: wos-cleanup.bat phase [1|2|3|all]
-::         or via START: start wos-cleanup phase [1|2|3|all]
+::  wos-cleanup.bat  —  single-file launcher
+::  Double-click to run.  No extraction needed.
+::  Downloads phase scripts from GitHub and runs all phases.
 :: ============================================================
 
-:: ── Argument parsing ────────────────────────────────────────
-set "ARG1=%~1"
-set "PHASE_NUM="
-
-if /i "%ARG1%"=="/?" goto :USAGE
-if /i "%ARG1%"=="-h"  goto :USAGE
-if /i "%ARG1%"=="--help" goto :USAGE
-
-if /i "%ARG1%"=="start" (
-    :: start wos-cleanup phase 1  ->  %1=start %2=wos-cleanup %3=phase %4=num
-    set "PHASE_NUM=%~4"
-    goto :VALIDATE
-)
-if /i "%ARG1%"=="phase" (
-    :: wos-cleanup.bat phase 1  ->  %1=phase %2=num
-    set "PHASE_NUM=%~2"
-    goto :VALIDATE
-)
-
-:USAGE
-echo.
-echo   WOS-Cleanup -- Windows Optimization ^& Sanitization Tool
-echo   ----------------------------------------------------------
-echo   Usage:
-echo     wos-cleanup.bat phase [1^|2^|3^|all]
-echo.
-echo   Phases:
-echo     phase 1    Debloat  : Remove pre-installed bloatware and UWP junk
-echo     phase 2    Optimize : Disable telemetry, tweak services and visuals
-echo     phase 3    Cleanup  : Deep disk clean, WU cache, DISM component store
-echo     phase all  Run all three phases back-to-back (reboots between phases)
-echo.
-goto :EOF
-
-:VALIDATE
-if "%PHASE_NUM%"=="" goto :USAGE
-if "%PHASE_NUM%"=="1"   goto :ELEVATE
-if "%PHASE_NUM%"=="2"   goto :ELEVATE
-if "%PHASE_NUM%"=="3"   goto :ELEVATE
-if /i "%PHASE_NUM%"=="all" goto :ELEVATE
-echo [ERROR] Unknown phase: "%PHASE_NUM%"
-goto :USAGE
-
-:: ── Auto-elevation ──────────────────────────────────────────
-:ELEVATE
+:: ── Auto-elevation ───────────────────────────────────────────
 net session >nul 2>&1
-if %errorlevel% == 0 goto :RUN
-echo [*] Not running as Administrator. Re-launching elevated ...
-powershell -NoProfile -Command "Start-Process cmd -ArgumentList '/c \"%~f0\" phase %PHASE_NUM%' -Verb RunAs"
-exit /b
+if %errorlevel% neq 0 (
+    echo [*] Not running as Administrator. Re-launching elevated ...
+    powershell -NoProfile -Command "Start-Process cmd -ArgumentList '/c \"%~f0\"' -Verb RunAs"
+    exit /b
+)
 
-:: ── Dispatch to PowerShell phase script ─────────────────────
-:RUN
-set "SCRIPT_DIR=%~dp0scripts"
+:: ── Config ───────────────────────────────────────────────────
+set "REPO=rubenalejandrocalderoncorona/wos-cleanup"
+set "BRANCH=main"
+set "BASE_URL=https://raw.githubusercontent.com/%REPO%/%BRANCH%/scripts"
+set "TMP=%TEMP%\wos-cleanup"
 
-if /i "%PHASE_NUM%"=="all" goto :RUN_ALL
+:: ── Banner ───────────────────────────────────────────────────
+echo.
+echo  ==========================================
+echo   WOS-Cleanup -- Windows Optimization Tool
+echo  ==========================================
+echo.
+echo  This will run 3 phases:
+echo    Phase 1 - Debloat  : Remove pre-installed bloatware
+echo    Phase 2 - Optimize : Disable telemetry, tune services
+echo    Phase 3 - Cleanup  : Deep disk clean, caches, WU cache
+echo.
+echo  A reboot is recommended after all phases complete.
+echo.
+echo  Press any key to begin, or close this window to cancel.
+pause >nul
 
-if "%PHASE_NUM%"=="1" set "SCRIPT=%SCRIPT_DIR%\phase1_debloat.ps1"
-if "%PHASE_NUM%"=="2" set "SCRIPT=%SCRIPT_DIR%\phase2_optimize.ps1"
-if "%PHASE_NUM%"=="3" set "SCRIPT=%SCRIPT_DIR%\phase3_cleanup.ps1"
+:: ── Create temp dir ──────────────────────────────────────────
+if not exist "%TMP%" mkdir "%TMP%"
 
-if not exist "%SCRIPT%" (
-    echo [ERROR] Script not found: %SCRIPT%
+:: ── Download scripts ─────────────────────────────────────────
+echo.
+echo [*] Downloading phase scripts from GitHub ...
+
+powershell -NoProfile -Command ^
+    "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; " ^
+    "Invoke-WebRequest '%BASE_URL%/phase1_debloat.ps1'  -OutFile '%TMP%\phase1_debloat.ps1'  -UseBasicParsing; " ^
+    "Invoke-WebRequest '%BASE_URL%/phase2_optimize.ps1' -OutFile '%TMP%\phase2_optimize.ps1' -UseBasicParsing; " ^
+    "Invoke-WebRequest '%BASE_URL%/phase3_cleanup.ps1'  -OutFile '%TMP%\phase3_cleanup.ps1'  -UseBasicParsing"
+
+if %errorlevel% neq 0 (
+    echo.
+    echo [ERROR] Failed to download scripts. Check your internet connection.
+    echo         Make sure GitHub is reachable and try again.
+    echo.
+    pause
     exit /b 1
 )
 
+echo [*] Download complete.
+
+:: ── Phase 1 ──────────────────────────────────────────────────
 echo.
-echo [wos-cleanup] Starting Phase %PHASE_NUM% ...
-echo [wos-cleanup] Script : %SCRIPT%
+echo  ==========================================
+echo   Phase 1 of 3 -- Debloat
+echo  ==========================================
+echo.
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%TMP%\phase1_debloat.ps1"
+echo.
+echo [*] Phase 1 complete.
+
+:: ── Phase 2 ──────────────────────────────────────────────────
+echo.
+echo  ==========================================
+echo   Phase 2 of 3 -- Optimize
+echo  ==========================================
+echo.
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%TMP%\phase2_optimize.ps1"
+echo.
+echo [*] Phase 2 complete.
+
+:: ── Phase 3 ──────────────────────────────────────────────────
+echo.
+echo  ==========================================
+echo   Phase 3 of 3 -- Cleanup
+echo  ==========================================
+echo.
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%TMP%\phase3_cleanup.ps1"
+echo.
+echo [*] Phase 3 complete.
+
+:: ── Done ─────────────────────────────────────────────────────
+echo.
+echo  ==========================================
+echo   All phases complete!
+echo   Reboot your system now to apply changes.
+echo  ==========================================
 echo.
 
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%SCRIPT%"
+:: Clean up temp scripts
+del /q "%TMP%\phase1_debloat.ps1"  2>nul
+del /q "%TMP%\phase2_optimize.ps1" 2>nul
+del /q "%TMP%\phase3_cleanup.ps1"  2>nul
+rmdir "%TMP%" 2>nul
 
-echo.
-echo [wos-cleanup] Phase %PHASE_NUM% complete. Press any key to exit.
-pause >nul
-endlocal
-goto :EOF
-
-:: ── Run all phases sequentially ──────────────────────────────
-:RUN_ALL
-echo.
-echo [wos-cleanup] Running ALL phases (1 → 2 → 3)
-echo [wos-cleanup] Each phase will run to completion.
-echo [wos-cleanup] A reboot is recommended between phases for best results.
-echo.
-echo   Press any key to begin Phase 1 (Debloat) ...
-pause >nul
-
-echo.
-echo [wos-cleanup] === Phase 1 — Debloat ===
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%SCRIPT_DIR%\phase1_debloat.ps1"
-
-echo.
-echo [wos-cleanup] Phase 1 complete.
-echo [wos-cleanup] Recommendation: reboot now, then re-run "wos-cleanup.bat phase 2" manually.
-echo [wos-cleanup] OR press any key to continue directly to Phase 2 (skip reboot) ...
-pause >nul
-
-echo.
-echo [wos-cleanup] === Phase 2 — Optimize ===
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%SCRIPT_DIR%\phase2_optimize.ps1"
-
-echo.
-echo [wos-cleanup] Phase 2 complete.
-echo [wos-cleanup] Recommendation: reboot now, then re-run "wos-cleanup.bat phase 3" manually.
-echo [wos-cleanup] OR press any key to continue directly to Phase 3 (skip reboot) ...
-pause >nul
-
-echo.
-echo [wos-cleanup] === Phase 3 — Deep Cleanup ===
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%SCRIPT_DIR%\phase3_cleanup.ps1"
-
-echo.
-echo [wos-cleanup] All phases complete.
-echo [wos-cleanup] Reboot your system now to apply all changes.
-echo.
-pause >nul
+pause
 endlocal

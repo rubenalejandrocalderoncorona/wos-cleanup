@@ -1,0 +1,46 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "WOS-Cleanup ${{ github.ref_name }}"
+          body: |
+            ## WOS-Cleanup ${{ github.ref_name }}
+
+            ### How to use
+
+            1. Download **wos-cleanup.bat** below
+            2. Double-click it
+            3. Accept the UAC (Administrator) prompt
+            4. It will download the latest scripts and run all 3 phases automatically
+            5. Reboot when done
+
+            ### What it does
+
+            | Phase | Description |
+            |-------|-------------|
+            | **1 — Debloat** | Removes Xbox, Cortana, Copilot, Teams, Candy Crush, OEM apps, and other pre-installed UWP junk |
+            | **2 — Optimize** | Disables telemetry, kills unnecessary services, applies Ultimate Performance power plan, disables Nagle's algorithm |
+            | **3 — Cleanup** | Wipes temp folders, clears Windows Update cache, browser caches, Windows.old, runs DISM component cleanup |
+
+            ### Requirements
+            - Windows 10 or Windows 11
+            - Internet connection (scripts are fetched from this repo at runtime)
+            - Administrator privileges (auto-handled via UAC prompt)
+          files: wos-cleanup.bat
+          draft: false
+          prerelease: false

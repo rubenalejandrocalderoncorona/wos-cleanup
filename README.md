@@ -7,53 +7,15 @@ Designed to run right after a clean Windows install.
 
 ---
 
-## How to run
+## How to use
 
-### Step 1 — Open CMD as Administrator
+1. Go to the [**Releases**](https://github.com/rubenalejandrocalderoncorona/wos-cleanup/releases/latest) page
+2. Download **wos-cleanup.bat**
+3. Double-click it
+4. Accept the UAC (Administrator) prompt
+5. Reboot when done
 
-Press **Win**, type `cmd`, then right-click **Command Prompt** → **Run as administrator**.
-
-> The tool auto-elevates if you forget — but starting as admin avoids the UAC prompt.
-
----
-
-### Step 2 — Navigate to the folder
-
-```cmd
-cd C:\path\to\wos-cleanup
-```
-
-Replace `C:\path\to\wos-cleanup` with wherever you saved this folder.
-Example: if you downloaded it to your Desktop:
-
-```cmd
-cd %USERPROFILE%\Desktop\wos-cleanup
-```
-
----
-
-### Step 3 — Run the phases
-
-Run all three phases back-to-back (recommended):
-
-```cmd
-wos-cleanup.bat phase all
-```
-
-Or run them one at a time with a reboot between each:
-
-```cmd
-wos-cleanup.bat phase 1
-```
-*(reboot)*
-```cmd
-wos-cleanup.bat phase 2
-```
-*(reboot)*
-```cmd
-wos-cleanup.bat phase 3
-```
-*(reboot)*
+That's it — no extraction, no CMD, no extra steps.
 
 ---
 
@@ -70,8 +32,8 @@ wos-cleanup.bat phase 3
 ## Requirements
 
 - Windows 10 or Windows 11
-- PowerShell 5.1+ (built-in — nothing to install)
-- Administrator privileges (auto-handled by the launcher)
+- Internet connection (scripts are fetched from GitHub at runtime)
+- Administrator privileges (auto-handled via UAC prompt)
 
 ---
 
@@ -79,14 +41,14 @@ wos-cleanup.bat phase 3
 
 ```
 wos-cleanup/
-├── wos-cleanup.bat          ← Entry point (auto-elevates, dispatches phases)
+├── wos-cleanup.bat          ← Single-file launcher (download this from Releases)
 └── scripts/
-    ├── phase1_debloat.ps1
+    ├── phase1_debloat.ps1   ← Fetched at runtime from GitHub
     ├── phase2_optimize.ps1
     └── phase3_cleanup.ps1
 ```
 
-The `.bat` calls each `.ps1` with `-ExecutionPolicy Bypass` — no manual policy changes needed.
+The launcher downloads each `.ps1` from this repo's `main` branch at runtime and runs them with `-ExecutionPolicy Bypass` — no manual policy changes needed.
 
 ---
 
